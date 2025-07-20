@@ -6,15 +6,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
 </head>
 <body>
+  <h2>Crop Image Classifier (Rabi, Kharif, Zaid)</h2>
   <input type="file" accept="image/*" onchange="predictImage(event)" />
-  <h3 id="result">Prediction: </h3>
+  <h3 id="result">Prediction will appear here</h3>
 
   <script>
     const URL = "https://teachablemachine.withgoogle.com/models/7IE0URe2N_/";
-    let model, labelContainer;
+
+    let model;
 
     async function loadModel() {
       model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+      console.log("Model loaded");
     }
 
     async function predictImage(event) {
@@ -24,10 +27,12 @@
       await image.decode();
 
       const prediction = await model.predict(image);
-      const best = prediction.reduce((a, b) => (a.probability > b.probability ? a : b));
+      console.log(prediction); // for debugging
+
+      const best = prediction.reduce((a, b) => a.probability > b.probability ? a : b);
       document.getElementById("result").innerText = "Prediction: " + best.className;
 
-      // If accessed via MIT App Inventor WebViewer, post the result back
+      // Send result to MIT App Inventor
       if (window.AppInventor) {
         window.AppInventor.setWebViewString(best.className);
       }
